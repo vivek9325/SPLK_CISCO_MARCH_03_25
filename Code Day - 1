@@ -1,0 +1,100 @@
+Table ---
+
+index="vk_idx" sourcetype="csv" 
+| table ticket_number, current_ticket_state, severity
+
+=============================================================================================================================
+
+Rename ---
+
+index="vk_idx" sourcetype="csv" 
+| table ticket_number, current_ticket_state, severity 
+| rename ticket_number as incident_number, severity as "Priority Value"
+
+=================================================================================================================================
+
+Stats 
+
+Sum & Avg with FullNull
+
+index=_internal | stats avg(bytes) as total_bytes by sourcetype | fillnull value="NA" total_bytes
+
+
+
+List & Values
+
+index=_internal 
+| stats list(source) as source by sourcetype
+
+index=_internal 
+| stats values(source) as source by sourcetype
+
+======================================================================================================================================
+Eval
+
+Calculations ---
+
+index=_internal 
+| eval kb = bytes/1024 
+| eval round_kb = round(kb,2) 
+| eval concat_kb = round_kb." KB" 
+| table bytes, kb, round_kb, concat_kb
+
+
+Optimized solution for above SPL Query ---
+
+index=_internal 
+| eval kb = round(bytes/1024,3)." KB" 
+| table bytes, kb
+
+
+If-Else Statement 
+
+index=vk_idx 
+| dedup severity 
+| eval status = if(severity<3, "High", "Normal") 
+| table severity, status
+
+Case Statement ----
+
+index=vk_idx 
+| dedup severity 
+| eval status = case(severity=1,"Critical", severity=2, "Normal", severity=3, "Low", 1=1, "Info") 
+| table severity, status 
+| sort severity
+
+
+=======================================================================================================================================
+
+Top / Rare ---
+
+Top 
+
+index=_internal |top limit=3 sourcetype
+
+index=_internal |top limit=0 sourcetype
+
+index=_internal |top sourcetype
+
+Rare --
+
+index=_internal |rare limit=3 sourcetype
+
+index=_internal |rare limit=0 sourcetype
+
+index=_internal |rare sourcetype
+
+======================================================================================================================================
+
+Addcoltotal & Addtotal ---
+
+
+index=vk_idx 
+| chart count by current_ticket_state, application_name 
+| addtotals fieldname=sum 
+| addcoltotals label=total labelfield=current_ticket_state
+
+==============================================================================================================================
+
+
+
