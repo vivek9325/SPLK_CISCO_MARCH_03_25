@@ -1,3 +1,6 @@
+https://github.com/vivek9325/SPLK_CISCO_MARCH_03_25/blob/main/Sample_tickets.csv
+
+
 Table ---
 
 index="vk_idx" sourcetype="csv" 
@@ -96,12 +99,24 @@ index=vk_idx
 
 ==============================================================================================================================
 
-Assignment - 1
 
-Regex101 - https://regex101.com/
+Append & Appendcols 
 
-Cheatsheet URL - https://www.debuggex.com/cheatsheet/regex/pcre
+Append
 
-==================================================================================================================================
+index=vk_idx 
+| stats count by severity 
+| append 
+    [ search index=_internal 
+    | top limit=3 sourcetype]
 
 
+Appendcols ---
+
+index=vk_idx 
+| stats count by severity 
+| appendcols 
+    [search index=_internal 
+    |  top limit=3 sourcetype]
+
+===========================================================================================================================
