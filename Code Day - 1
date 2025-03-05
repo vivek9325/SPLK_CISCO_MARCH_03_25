@@ -122,3 +122,24 @@ Assignment No - 1
 
 Regex - https://regex101.com/
 Regular Expression CheatSheet - https://www.debuggex.com/cheatsheet/regex/pcre
+
+=========================================================================================================================
+
+
+index=vk_idx source="sample_tickets.csv" 
+
+| stats count by current_ticket_state
+
+
+
+index=vk_idx source=Sample_tickets.csv
+
+| stats count by severity
+
+
+
+index=vk_idx source="sample_tickets.csv" $system_user$
+
+| stats count by severity
+
+
